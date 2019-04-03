@@ -9,12 +9,19 @@ namespace Ncfe.CodeTest
         private readonly IArchivedDataService _archivedDataService;
         private readonly IFailoverLearnerDataAccess _failoverLearnerDataAccess;
         private readonly ILearnerDataAccess _learnerDataAccess;
+        private readonly IFailoverRepository _failoverRepository;
 
-        public LearnerService(IArchivedDataService archivedDataService, IFailoverLearnerDataAccess failoverLearnerDataAccess, ILearnerDataAccess learnerDataAccess)
+        public LearnerService(
+             IArchivedDataService archivedDataService
+           , IFailoverLearnerDataAccess failoverLearnerDataAccess
+           , ILearnerDataAccess learnerDataAccess
+           , IFailoverRepository failoverRepository
+            )
         {
             _archivedDataService = archivedDataService;
             _failoverLearnerDataAccess = failoverLearnerDataAccess;
             _learnerDataAccess = learnerDataAccess;
+            _failoverRepository = failoverRepository;
         }
 
         public Learner GetLearner(int learnerId, bool isLearnerArchived)
@@ -30,8 +37,7 @@ namespace Ncfe.CodeTest
             else
             {
 
-                var failoverRespository = new FailoverRepository();
-                var failoverEntries = failoverRespository.GetFailOverEntries();
+                var failoverEntries = _failoverRepository.GetFailOverEntries();
 
 
                 var failedRequests = 0;

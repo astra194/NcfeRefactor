@@ -50,7 +50,8 @@
     <Compile Include="DataAccess\Wrappers\LearnerDataAccessWrapper.cs" />
     <Compile Include="FailoverEntry.cs" />
     <Compile Include="DataAccess\Actuals\FailoverLearnerDataAccess.cs" />
-    <Compile Include="FailoverRepository.cs" />
+    <Compile Include="DataAccess\Actuals\FailoverRepository.cs" />
+    <Compile Include="DataAccess\Interfaces\IFailoverRepository.cs" />
     <Compile Include="Learner.cs" />
     <Compile Include="DataAccess\Actuals\LearnerDataAccess.cs" />
     <Compile Include="LearnerResponse.cs" />
