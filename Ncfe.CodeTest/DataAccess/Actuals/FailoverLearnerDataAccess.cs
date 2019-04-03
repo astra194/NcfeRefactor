@@ -1,4 +1,4 @@
-﻿namespace Ncfe.CodeTest
+﻿namespace Ncfe.CodeTest.DataAccess.Actuals
 {
     public class FailoverLearnerDataAccess
     {

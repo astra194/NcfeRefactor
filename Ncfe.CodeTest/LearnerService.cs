@@ -1,22 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Ncfe.CodeTest.DataAccess.Interfaces;
+using System;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ncfe.CodeTest
 {
     public class LearnerService
     {
+        private readonly IArchivedDataService _archivedDataService;
+        private readonly IFailoverLearnerDataAccess _failoverLearnerDataAccess;
+        private readonly ILearnerDataAccess _learnerDataAccess;
+
+        public LearnerService(IArchivedDataService archivedDataService, IFailoverLearnerDataAccess failoverLearnerDataAccess, ILearnerDataAccess learnerDataAccess)
+        {
+            _archivedDataService = archivedDataService;
+            _failoverLearnerDataAccess = failoverLearnerDataAccess;
+            _learnerDataAccess = learnerDataAccess;
+        }
+
         public Learner GetLearner(int learnerId, bool isLearnerArchived)
         {
             Learner archivedLearner = null;
 
             if (isLearnerArchived)
             {
-                var archivedDataService = new ArchivedDataService();
-                archivedLearner = archivedDataService.GetArchivedLearner(learnerId);
+                archivedLearner = _archivedDataService.GetArchivedLearner(learnerId);
 
                 return archivedLearner;
             }
@@ -42,20 +49,18 @@ namespace Ncfe.CodeTest
 
                 if (failedRequests > 100 && (ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "true" || ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "True"))
                 {
-                    learnerResponse = FailoverLearnerDataAccess.GetLearnerById(learnerId);
+                    learnerResponse = _failoverLearnerDataAccess.GetLearnerById(learnerId);
                 }
                 else
                 {
-                    var dataAccess = new LearnerDataAccess();
-                    learnerResponse = dataAccess.LoadLearner(learnerId);
+                    learnerResponse = _learnerDataAccess.LoadLearner(learnerId);
 
 
                 }
 
                 if (learnerResponse.IsArchived)
                 {
-                    var archivedDataService = new ArchivedDataService();
-                    learner = archivedDataService.GetArchivedLearner(learnerId);
+                    learner = _archivedDataService.GetArchivedLearner(learnerId);
                 }
                 else
                 {

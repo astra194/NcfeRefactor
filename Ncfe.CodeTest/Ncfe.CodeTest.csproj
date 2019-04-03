@@ -41,16 +41,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArchivedDataService.cs" />
+    <Compile Include="DataAccess\Actuals\ArchivedDataService.cs" />
+    <Compile Include="DataAccess\Interfaces\IFailoverLearnerDataAccess.cs" />
+    <Compile Include="DataAccess\Interfaces\IArchivedDataService.cs" />
+    <Compile Include="DataAccess\Interfaces\ILearnerDataAccess.cs" />
+    <Compile Include="DataAccess\Wrappers\ArchivedDataServiceWrapper.cs" />
+    <Compile Include="DataAccess\Wrappers\FailoverLearnerDataAccessWrapper.cs" />
+    <Compile Include="DataAccess\Wrappers\LearnerDataAccessWrapper.cs" />
     <Compile Include="FailoverEntry.cs" />
-    <Compile Include="FailoverLearnerDataAccess.cs" />
+    <Compile Include="DataAccess\Actuals\FailoverLearnerDataAccess.cs" />
     <Compile Include="FailoverRepository.cs" />
     <Compile Include="Learner.cs" />
-    <Compile Include="LearnerDataAccess.cs" />
+    <Compile Include="DataAccess\Actuals\LearnerDataAccess.cs" />
     <Compile Include="LearnerResponse.cs" />
     <Compile Include="LearnerService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
