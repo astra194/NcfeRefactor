@@ -42,12 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\Actuals\ArchivedDataService.cs" />
-    <Compile Include="DataAccess\Interfaces\IFailoverLearnerDataAccess.cs" />
-    <Compile Include="DataAccess\Interfaces\IArchivedDataService.cs" />
-    <Compile Include="DataAccess\Interfaces\ILearnerDataAccess.cs" />
-    <Compile Include="DataAccess\Wrappers\ArchivedDataServiceWrapper.cs" />
-    <Compile Include="DataAccess\Wrappers\FailoverLearnerDataAccessWrapper.cs" />
-    <Compile Include="DataAccess\Wrappers\LearnerDataAccessWrapper.cs" />
+    <Compile Include="DataAccess\Interfaces\ILearnerDataService.cs" />
+    <Compile Include="DataAccess\Wrappers\ArchiveDataService.cs" />
+    <Compile Include="DataAccess\Wrappers\FailoverDataService.cs" />
+    <Compile Include="DataAccess\Wrappers\LiveDataService.cs" />
     <Compile Include="FailoverEntry.cs" />
     <Compile Include="DataAccess\Actuals\FailoverLearnerDataAccess.cs" />
     <Compile Include="DataAccess\Actuals\FailoverRepository.cs" />

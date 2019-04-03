@@ -17,9 +17,9 @@ namespace Ncfe.CodeTest.Tests
             Failover,
         }
 
-        private IArchivedDataService _archiveDataService;
-        private IFailoverLearnerDataAccess _failoverDataService;
-        private ILearnerDataAccess _liveDataService;
+        private ILearnerDataService _archiveDataService;
+        private ILearnerDataService _failoverDataService;
+        private ILearnerDataService _liveDataService;
         private IFailoverRepository _failoverRepository;
 
         private LearnerService _sut;
@@ -27,9 +27,9 @@ namespace Ncfe.CodeTest.Tests
         [TestInitialize]
         public void Setup()
         {
-            _archiveDataService = A.Fake<IArchivedDataService>();
-            _failoverDataService = A.Fake<IFailoverLearnerDataAccess>();
-            _liveDataService = A.Fake<ILearnerDataAccess>();
+            _archiveDataService = A.Fake<ILearnerDataService>();
+            _failoverDataService = A.Fake<ILearnerDataService>();
+            _liveDataService = A.Fake<ILearnerDataService>();
             _failoverRepository = A.Fake<IFailoverRepository>();
 
             _sut = new LearnerService(_archiveDataService, _failoverDataService, _liveDataService, _failoverRepository);
@@ -85,15 +85,16 @@ namespace Ncfe.CodeTest.Tests
             )
         {
             var archiveLearner = new Learner();
-            A.CallTo(() => _archiveDataService.GetArchivedLearner(A<int>._)).Returns(archiveLearner);
+            var archiveLearnerResponse = new LearnerResponse { IsArchived = true, Learner = archiveLearner };
+            A.CallTo(() => _archiveDataService.GetLearner(A<int>._)).Returns(archiveLearnerResponse);
 
             var failoverLearner = new Learner();
             var failoverLearnerResponse = new LearnerResponse { IsArchived = learnerResponseArchived, Learner = failoverLearner };
-            A.CallTo(() => _failoverDataService.GetLearnerById(A<int>._)).Returns(failoverLearnerResponse);
+            A.CallTo(() => _failoverDataService.GetLearner(A<int>._)).Returns(failoverLearnerResponse);
 
             var liveLearner = new Learner();
             var liveLearnerResponse = new LearnerResponse { IsArchived = learnerResponseArchived, Learner = liveLearner };
-            A.CallTo(() => _liveDataService.LoadLearner(A<int>._)).Returns(liveLearnerResponse);
+            A.CallTo(() => _liveDataService.GetLearner(A<int>._)).Returns(liveLearnerResponse);
 
             var failoverEntries = new List<FailoverEntry>(GenerateFailoverEntries(failoverEntriesThreshold, failoverEntriesRecent));
             A.CallTo(() => _failoverRepository.GetFailOverEntries()).Returns(failoverEntries);
@@ -133,19 +134,19 @@ namespace Ncfe.CodeTest.Tests
             Assert.AreSame(expectedLearner, learner);
 
             if (archiveDataAccessed)
-                A.CallTo(() => _archiveDataService.GetArchivedLearner(A<int>._)).MustHaveHappenedOnceExactly();
+                A.CallTo(() => _archiveDataService.GetLearner(A<int>._)).MustHaveHappenedOnceExactly();
             else
-                A.CallTo(() => _archiveDataService.GetArchivedLearner(A<int>._)).MustNotHaveHappened();
+                A.CallTo(() => _archiveDataService.GetLearner(A<int>._)).MustNotHaveHappened();
 
             if (failoverDataAccessed)
-                A.CallTo(() => _failoverDataService.GetLearnerById(A<int>._)).MustHaveHappenedOnceExactly();
+                A.CallTo(() => _failoverDataService.GetLearner(A<int>._)).MustHaveHappenedOnceExactly();
             else
-                A.CallTo(() => _failoverDataService.GetLearnerById(A<int>._)).MustNotHaveHappened();
+                A.CallTo(() => _failoverDataService.GetLearner(A<int>._)).MustNotHaveHappened();
 
             if (liveDataAccessed)
-                A.CallTo(() => _liveDataService.LoadLearner(A<int>._)).MustHaveHappenedOnceExactly();
+                A.CallTo(() => _liveDataService.GetLearner(A<int>._)).MustHaveHappenedOnceExactly();
             else
-                A.CallTo(() => _liveDataService.LoadLearner(A<int>._)).MustNotHaveHappened();
+                A.CallTo(() => _liveDataService.GetLearner(A<int>._)).MustNotHaveHappened();
 
             if (failoverRepositoryAccessed)
                 A.CallTo(() => _failoverRepository.GetFailOverEntries()).MustHaveHappenedOnceExactly();

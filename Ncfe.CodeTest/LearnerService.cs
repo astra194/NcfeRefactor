@@ -6,39 +6,34 @@ namespace Ncfe.CodeTest
 {
     public class LearnerService
     {
-        private readonly IArchivedDataService _archivedDataService;
-        private readonly IFailoverLearnerDataAccess _failoverLearnerDataAccess;
-        private readonly ILearnerDataAccess _learnerDataAccess;
+        private readonly ILearnerDataService _archiveDataService;
+        private readonly ILearnerDataService _failoverDataService;
+        private readonly ILearnerDataService _liveDataService;
         private readonly IFailoverRepository _failoverRepository;
 
         public LearnerService(
-             IArchivedDataService archivedDataService
-           , IFailoverLearnerDataAccess failoverLearnerDataAccess
-           , ILearnerDataAccess learnerDataAccess
+             ILearnerDataService archiveDataService
+           , ILearnerDataService failoverDataService
+           , ILearnerDataService liveDataService
            , IFailoverRepository failoverRepository
             )
         {
-            _archivedDataService = archivedDataService;
-            _failoverLearnerDataAccess = failoverLearnerDataAccess;
-            _learnerDataAccess = learnerDataAccess;
+            _archiveDataService = archiveDataService;
+            _failoverDataService = failoverDataService;
+            _liveDataService = liveDataService;
             _failoverRepository = failoverRepository;
         }
 
         public Learner GetLearner(int learnerId, bool isLearnerArchived)
         {
-            Learner archivedLearner = null;
-
             if (isLearnerArchived)
             {
-                archivedLearner = _archivedDataService.GetArchivedLearner(learnerId);
-
-                return archivedLearner;
+                LearnerResponse archiveLearnerResponse = _archiveDataService.GetLearner(learnerId);
+                return archiveLearnerResponse.Learner;
             }
             else
             {
-
                 var failoverEntries = _failoverRepository.GetFailOverEntries();
-
 
                 var failedRequests = 0;
 
@@ -55,28 +50,26 @@ namespace Ncfe.CodeTest
 
                 if (failedRequests > 100 && (ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "true" || ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "True"))
                 {
-                    learnerResponse = _failoverLearnerDataAccess.GetLearnerById(learnerId);
+                    learnerResponse = _failoverDataService.GetLearner(learnerId);
                 }
                 else
                 {
-                    learnerResponse = _learnerDataAccess.LoadLearner(learnerId);
+                    learnerResponse = _liveDataService.GetLearner(learnerId);
 
 
                 }
 
                 if (learnerResponse.IsArchived)
                 {
-                    learner = _archivedDataService.GetArchivedLearner(learnerId);
+                    learner = _archiveDataService.GetLearner(learnerId).Learner;
                 }
                 else
                 {
                     learner = learnerResponse.Learner;
                 }
 
-
                 return learner;
             }
         }
-
     }
 }

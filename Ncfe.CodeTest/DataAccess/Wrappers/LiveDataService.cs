@@ -3,9 +3,9 @@ using Ncfe.CodeTest.DataAccess.Interfaces;
 
 namespace Ncfe.CodeTest.DataAccess.Wrappers
 {
-    public class LearnerDataAccessWrapper : ILearnerDataAccess
+    public class LiveDataService : ILearnerDataService
     {
-        public LearnerResponse LoadLearner(int learnerId)
+        public LearnerResponse GetLearner(int learnerId)
         {
             var actual = new LearnerDataAccess();
             return actual.LoadLearner(learnerId);
