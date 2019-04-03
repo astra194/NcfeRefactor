@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ncfe.CodeTest
+namespace Ncfe.CodeTest.Failover.Repository
 {
     public class FailoverEntry
     {

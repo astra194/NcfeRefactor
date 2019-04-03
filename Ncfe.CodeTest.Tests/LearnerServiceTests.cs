@@ -1,6 +1,7 @@
 ﻿using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ncfe.CodeTest.DataAccess.Interfaces;
+using Ncfe.CodeTest.Failover;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -20,7 +21,7 @@ namespace Ncfe.CodeTest.Tests
         private ILearnerDataService _archiveDataService;
         private ILearnerDataService _failoverDataService;
         private ILearnerDataService _liveDataService;
-        private IFailoverRepository _failoverRepository;
+        private IFailoverService _failoverService;
 
         private LearnerService _sut;
 
@@ -30,9 +31,9 @@ namespace Ncfe.CodeTest.Tests
             _archiveDataService = A.Fake<ILearnerDataService>();
             _failoverDataService = A.Fake<ILearnerDataService>();
             _liveDataService = A.Fake<ILearnerDataService>();
-            _failoverRepository = A.Fake<IFailoverRepository>();
+            _failoverService = A.Fake<IFailoverService>();
 
-            _sut = new LearnerService(_archiveDataService, _failoverDataService, _liveDataService, _failoverRepository);
+            _sut = new LearnerService(_archiveDataService, _failoverDataService, _liveDataService, _failoverService);
         }
 
         [TestCleanup]
@@ -41,7 +42,7 @@ namespace Ncfe.CodeTest.Tests
             _archiveDataService = null;
             _failoverDataService = null;
             _liveDataService = null;
-            _failoverRepository = null;
+            _failoverService = null;
 
             _sut = null;
         }
@@ -52,23 +53,19 @@ namespace Ncfe.CodeTest.Tests
 
             foreach (var isLearnerArchived in all)
             {
-                foreach (var failoverEntriesRecent in all)
+                foreach (var inFailoverMode in all)
                 {
-                    foreach (var failoverEntriesThreshold in all)
+                    foreach (var failoverModeEnabled in all)
                     {
-                        foreach (var failoverModeEnabled in all)
+                        foreach (var learnerResponseArchived in all)
                         {
-                            foreach (var learnerResponseArchived in all)
+                            yield return new object[]
                             {
-                                yield return new object[]
-                                {
-                                      isLearnerArchived
-                                    , failoverEntriesRecent
-                                    , failoverEntriesThreshold
-                                    , failoverModeEnabled
-                                    , learnerResponseArchived
-                                };
-                            }
+                                  isLearnerArchived
+                                , inFailoverMode
+                                , failoverModeEnabled
+                                , learnerResponseArchived
+                            };
                         }
                     }
                 }
@@ -78,8 +75,7 @@ namespace Ncfe.CodeTest.Tests
         [DataTestMethod, DynamicData(nameof(GetLearnerAllDecisions), DynamicDataSourceType.Method)]
         public void GetLearnerTests(
               bool isLearnerArchived
-            , bool failoverEntriesRecent
-            , bool failoverEntriesThreshold
+            , bool inFailoverMode
             , bool failoverModeEnabled
             , bool learnerResponseArchived
             )
@@ -96,20 +92,19 @@ namespace Ncfe.CodeTest.Tests
             var liveLearnerResponse = new LearnerResponse { IsArchived = learnerResponseArchived, Learner = liveLearner };
             A.CallTo(() => _liveDataService.GetLearner(A<int>._)).Returns(liveLearnerResponse);
 
-            var failoverEntries = new List<FailoverEntry>(GenerateFailoverEntries(failoverEntriesThreshold, failoverEntriesRecent));
-            A.CallTo(() => _failoverRepository.GetFailOverEntries()).Returns(failoverEntries);
+            A.CallTo(() => _failoverService.InFailoverMode()).Returns(inFailoverMode);
 
             ConfigurationManager.AppSettings["IsFailoverModeEnabled"] = failoverModeEnabled.ToString();
 
             LearnerSource learnerSource = isLearnerArchived || learnerResponseArchived ? LearnerSource.Archive :
-                                            failoverEntriesRecent && failoverEntriesThreshold && failoverModeEnabled ? LearnerSource.Failover :
+                                            inFailoverMode && failoverModeEnabled ? LearnerSource.Failover :
                                             LearnerSource.Live;
 
             bool archiveDataAccessed = isLearnerArchived || learnerResponseArchived;
-            bool failoverDataAccessed = !isLearnerArchived && failoverEntriesRecent && failoverEntriesThreshold && failoverModeEnabled;
-            bool liveDataAccessed = !isLearnerArchived && (!failoverEntriesRecent || !failoverEntriesThreshold || !failoverModeEnabled);
+            bool failoverDataAccessed = !isLearnerArchived && inFailoverMode && failoverModeEnabled;
+            bool liveDataAccessed = !isLearnerArchived && (!inFailoverMode || !failoverModeEnabled);
 
-            bool failoverRepositoryAccessed = !isLearnerArchived;
+            bool failoverServiceAccessed = !isLearnerArchived;
 
             var learner = _sut.GetLearner(1, isLearnerArchived);
 
@@ -148,20 +143,10 @@ namespace Ncfe.CodeTest.Tests
             else
                 A.CallTo(() => _liveDataService.GetLearner(A<int>._)).MustNotHaveHappened();
 
-            if (failoverRepositoryAccessed)
-                A.CallTo(() => _failoverRepository.GetFailOverEntries()).MustHaveHappenedOnceExactly();
+            if (failoverServiceAccessed)
+                A.CallTo(() => _failoverService.InFailoverMode()).MustHaveHappenedOnceExactly();
             else
-                A.CallTo(() => _failoverRepository.GetFailOverEntries()).MustNotHaveHappened();
-        }
-
-        private IEnumerable<FailoverEntry> GenerateFailoverEntries(bool failoverEntriesThreshold, bool failoverEntriesRecent)
-        {
-            int failoverEntriesCount = failoverEntriesThreshold ? 110 : 90;
-            for (int i = 0; i < failoverEntriesCount; i++)
-            {
-                DateTime entryTime = failoverEntriesRecent ? DateTime.Now : DateTime.Now - TimeSpan.FromMinutes(30);
-                yield return new FailoverEntry { DateTime = entryTime };
-            }
+                A.CallTo(() => _failoverService.InFailoverMode()).MustNotHaveHappened();
         }
     }
 }

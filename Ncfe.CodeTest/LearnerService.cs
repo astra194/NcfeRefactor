@@ -1,4 +1,5 @@
 ﻿using Ncfe.CodeTest.DataAccess.Interfaces;
+using Ncfe.CodeTest.Failover;
 using System;
 using System.Configuration;
 
@@ -9,19 +10,19 @@ namespace Ncfe.CodeTest
         private readonly ILearnerDataService _archiveDataService;
         private readonly ILearnerDataService _failoverDataService;
         private readonly ILearnerDataService _liveDataService;
-        private readonly IFailoverRepository _failoverRepository;
+        private readonly IFailoverService _failoverService;
 
         public LearnerService(
              ILearnerDataService archiveDataService
            , ILearnerDataService failoverDataService
            , ILearnerDataService liveDataService
-           , IFailoverRepository failoverRepository
+           , IFailoverService failoverService
             )
         {
             _archiveDataService = archiveDataService;
             _failoverDataService = failoverDataService;
             _liveDataService = liveDataService;
-            _failoverRepository = failoverRepository;
+            _failoverService = failoverService;
         }
 
         public Learner GetLearner(int learnerId, bool isLearnerArchived)
@@ -33,30 +34,16 @@ namespace Ncfe.CodeTest
             }
             else
             {
-                var failoverEntries = _failoverRepository.GetFailOverEntries();
-
-                var failedRequests = 0;
-
-                foreach (var failoverEntry in failoverEntries)
-                {
-                    if (failoverEntry.DateTime > DateTime.Now.AddMinutes(-10))
-                    {
-                        failedRequests++;
-                    }
-                }
-
                 LearnerResponse learnerResponse = null;
                 Learner learner = null;
 
-                if (failedRequests > 100 && (ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "true" || ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "True"))
+                if (_failoverService.InFailoverMode() && (ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "true" || ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "True"))
                 {
                     learnerResponse = _failoverDataService.GetLearner(learnerId);
                 }
                 else
                 {
                     learnerResponse = _liveDataService.GetLearner(learnerId);
-
-
                 }
 
                 if (learnerResponse.IsArchived)

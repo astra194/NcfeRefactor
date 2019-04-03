@@ -46,10 +46,12 @@
     <Compile Include="DataAccess\Wrappers\ArchiveDataService.cs" />
     <Compile Include="DataAccess\Wrappers\FailoverDataService.cs" />
     <Compile Include="DataAccess\Wrappers\LiveDataService.cs" />
-    <Compile Include="FailoverEntry.cs" />
+    <Compile Include="Failover\Repository\FailoverEntry.cs" />
     <Compile Include="DataAccess\Actuals\FailoverLearnerDataAccess.cs" />
-    <Compile Include="DataAccess\Actuals\FailoverRepository.cs" />
-    <Compile Include="DataAccess\Interfaces\IFailoverRepository.cs" />
+    <Compile Include="Failover\Repository\FailoverRepository.cs" />
+    <Compile Include="Failover\Repository\IFailoverRepository.cs" />
+    <Compile Include="Failover\FailoverService.cs" />
+    <Compile Include="Failover\IFailoverService.cs" />
     <Compile Include="Learner.cs" />
     <Compile Include="DataAccess\Actuals\LearnerDataAccess.cs" />
     <Compile Include="LearnerResponse.cs" />

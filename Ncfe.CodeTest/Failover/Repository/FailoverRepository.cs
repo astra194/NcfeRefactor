@@ -1,7 +1,6 @@
-﻿using Ncfe.CodeTest.DataAccess.Interfaces;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Ncfe.CodeTest.DataAccess.Actuals
+namespace Ncfe.CodeTest.Failover.Repository
 {
     public class FailoverRepository : IFailoverRepository
     {

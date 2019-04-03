@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Ncfe.CodeTest.DataAccess.Interfaces
+namespace Ncfe.CodeTest.Failover.Repository
 {
     public interface IFailoverRepository
     {
