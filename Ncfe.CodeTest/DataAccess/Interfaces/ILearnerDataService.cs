@@ -1,4 +1,6 @@
-﻿namespace Ncfe.CodeTest.DataAccess.Interfaces
+﻿using Ncfe.CodeTest.Model;
+
+namespace Ncfe.CodeTest.DataAccess.Interfaces
 {
     public interface ILearnerDataService
     {

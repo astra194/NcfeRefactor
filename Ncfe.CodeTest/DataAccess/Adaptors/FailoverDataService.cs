@@ -1,5 +1,6 @@
 ﻿using Ncfe.CodeTest.DataAccess.Actuals;
 using Ncfe.CodeTest.DataAccess.Interfaces;
+using Ncfe.CodeTest.Model;
 
 namespace Ncfe.CodeTest.DataAccess.Adaptors
 {

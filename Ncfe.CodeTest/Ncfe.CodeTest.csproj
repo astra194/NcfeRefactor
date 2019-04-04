@@ -55,9 +55,9 @@
     <Compile Include="Failover\Repository\IFailoverRepository.cs" />
     <Compile Include="Failover\FailoverService.cs" />
     <Compile Include="Failover\IFailoverService.cs" />
-    <Compile Include="Learner.cs" />
+    <Compile Include="Model\Learner.cs" />
     <Compile Include="DataAccess\Actuals\LearnerDataAccess.cs" />
-    <Compile Include="LearnerResponse.cs" />
+    <Compile Include="Model\LearnerResponse.cs" />
     <Compile Include="LearnerService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

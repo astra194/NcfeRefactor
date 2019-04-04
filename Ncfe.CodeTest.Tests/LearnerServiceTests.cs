@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ncfe.CodeTest.DataAccess.Interfaces;
 using Ncfe.CodeTest.Failover;
+using Ncfe.CodeTest.Model;
 using System;
 using System.Collections.Generic;
 
