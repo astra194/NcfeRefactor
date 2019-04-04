@@ -1,6 +1,7 @@
 ﻿using Ncfe.CodeTest.DataAccess.Interfaces;
 using Ncfe.CodeTest.Failover;
 using Ncfe.CodeTest.Model;
+using System;
 
 namespace Ncfe.CodeTest
 {
@@ -26,35 +27,29 @@ namespace Ncfe.CodeTest
 
         public Learner GetLearner(int learnerId, bool isLearnerArchived)
         {
+            Func<int, Learner> strategy;
             if (isLearnerArchived)
             {
-                return _archiveService.GetLearner(learnerId);
+                strategy = (id) => _archiveService.GetLearner(id);
+            }
+            else if (_failoverService.InFailoverMode())
+            {
+                strategy = (id) => DataOrArchive(_failoverDataService, id);
             }
             else
             {
-                LearnerResponse learnerResponse = null;
-                Learner learner = null;
-
-                if (_failoverService.InFailoverMode())
-                {
-                    learnerResponse = _failoverDataService.GetLearner(learnerId);
-                }
-                else
-                {
-                    learnerResponse = _liveDataService.GetLearner(learnerId);
-                }
-
-                if (learnerResponse.IsArchived)
-                {
-                    learner = _archiveService.GetLearner(learnerId);
-                }
-                else
-                {
-                    learner = learnerResponse.Learner;
-                }
-
-                return learner;
+                strategy = (id) => DataOrArchive(_liveDataService, id);
             }
+
+            return strategy(learnerId);
+        }
+
+        private Learner DataOrArchive(ILearnerDataService dataService, int learnerId)
+        {
+            LearnerResponse response = dataService.GetLearner(learnerId);
+            return response.IsArchived
+                ? _archiveService.GetLearner(learnerId)
+                : response.Learner;
         }
     }
 }
