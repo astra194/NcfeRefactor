@@ -44,6 +44,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="DataAccess\Actuals\ArchivedDataService.cs" />
+    <Compile Include="DataAccess\Interfaces\ILearnerArchiveService.cs" />
     <Compile Include="DataAccess\Interfaces\ILearnerDataService.cs" />
     <Compile Include="DataAccess\Adaptors\ArchiveDataService.cs" />
     <Compile Include="DataAccess\Adaptors\FailoverDataService.cs" />

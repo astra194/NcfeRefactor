@@ -5,19 +5,19 @@ namespace Ncfe.CodeTest
 {
     public class LearnerService
     {
-        private readonly ILearnerDataService _archiveDataService;
+        private readonly ILearnerArchiveService _archiveService;
         private readonly ILearnerDataService _failoverDataService;
         private readonly ILearnerDataService _liveDataService;
         private readonly IFailoverService _failoverService;
 
         public LearnerService(
-             ILearnerDataService archiveDataService
+             ILearnerArchiveService archiveService
            , ILearnerDataService failoverDataService
            , ILearnerDataService liveDataService
            , IFailoverService failoverService
             )
         {
-            _archiveDataService = archiveDataService;
+            _archiveService = archiveService;
             _failoverDataService = failoverDataService;
             _liveDataService = liveDataService;
             _failoverService = failoverService;
@@ -27,8 +27,7 @@ namespace Ncfe.CodeTest
         {
             if (isLearnerArchived)
             {
-                LearnerResponse archiveLearnerResponse = _archiveDataService.GetLearner(learnerId);
-                return archiveLearnerResponse.Learner;
+                return _archiveService.GetLearner(learnerId);
             }
             else
             {
@@ -46,7 +45,7 @@ namespace Ncfe.CodeTest
 
                 if (learnerResponse.IsArchived)
                 {
-                    learner = _archiveDataService.GetLearner(learnerId).Learner;
+                    learner = _archiveService.GetLearner(learnerId);
                 }
                 else
                 {

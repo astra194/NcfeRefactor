@@ -17,7 +17,7 @@ namespace Ncfe.CodeTest.Tests
             Failover,
         }
 
-        private ILearnerDataService _archiveDataService;
+        private ILearnerArchiveService _archiveService;
         private ILearnerDataService _failoverDataService;
         private ILearnerDataService _liveDataService;
         private IFailoverService _failoverService;
@@ -27,18 +27,18 @@ namespace Ncfe.CodeTest.Tests
         [TestInitialize]
         public void Setup()
         {
-            _archiveDataService = A.Fake<ILearnerDataService>();
+            _archiveService = A.Fake<ILearnerArchiveService>();
             _failoverDataService = A.Fake<ILearnerDataService>();
             _liveDataService = A.Fake<ILearnerDataService>();
             _failoverService = A.Fake<IFailoverService>();
 
-            _sut = new LearnerService(_archiveDataService, _failoverDataService, _liveDataService, _failoverService);
+            _sut = new LearnerService(_archiveService, _failoverDataService, _liveDataService, _failoverService);
         }
 
         [TestCleanup]
         public void Teardown()
         {
-            _archiveDataService = null;
+            _archiveService = null;
             _failoverDataService = null;
             _liveDataService = null;
             _failoverService = null;
@@ -75,8 +75,7 @@ namespace Ncfe.CodeTest.Tests
             )
         {
             var archiveLearner = new Learner();
-            var archiveLearnerResponse = new LearnerResponse { IsArchived = true, Learner = archiveLearner };
-            A.CallTo(() => _archiveDataService.GetLearner(A<int>._)).Returns(archiveLearnerResponse);
+            A.CallTo(() => _archiveService.GetLearner(A<int>._)).Returns(archiveLearner);
 
             var failoverLearner = new Learner();
             var failoverLearnerResponse = new LearnerResponse { IsArchived = learnerResponseArchived, Learner = failoverLearner };
@@ -121,9 +120,9 @@ namespace Ncfe.CodeTest.Tests
             Assert.AreSame(expectedLearner, learner);
 
             if (archiveDataAccessed)
-                A.CallTo(() => _archiveDataService.GetLearner(A<int>._)).MustHaveHappenedOnceExactly();
+                A.CallTo(() => _archiveService.GetLearner(A<int>._)).MustHaveHappenedOnceExactly();
             else
-                A.CallTo(() => _archiveDataService.GetLearner(A<int>._)).MustNotHaveHappened();
+                A.CallTo(() => _archiveService.GetLearner(A<int>._)).MustNotHaveHappened();
 
             if (failoverDataAccessed)
                 A.CallTo(() => _failoverDataService.GetLearner(A<int>._)).MustHaveHappenedOnceExactly();

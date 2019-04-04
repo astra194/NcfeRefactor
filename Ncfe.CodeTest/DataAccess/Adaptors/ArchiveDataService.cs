@@ -3,13 +3,12 @@ using Ncfe.CodeTest.DataAccess.Interfaces;
 
 namespace Ncfe.CodeTest.DataAccess.Adaptors
 {
-    public class ArchiveDataService : ILearnerDataService
+    public class ArchiveDataService : ILearnerArchiveService
     {
-        public LearnerResponse GetLearner(int learnerId)
+        public Learner GetLearner(int learnerId)
         {
             var archiveService = new ArchivedDataService();
-            var learner = archiveService.GetArchivedLearner(learnerId);
-            return new LearnerResponse { IsArchived = true, Learner = learner };
+            return archiveService.GetArchivedLearner(learnerId);
         }
     }
 }
