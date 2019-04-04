@@ -45,9 +45,9 @@
     <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="DataAccess\Actuals\ArchivedDataService.cs" />
     <Compile Include="DataAccess\Interfaces\ILearnerDataService.cs" />
-    <Compile Include="DataAccess\Wrappers\ArchiveDataService.cs" />
-    <Compile Include="DataAccess\Wrappers\FailoverDataService.cs" />
-    <Compile Include="DataAccess\Wrappers\LiveDataService.cs" />
+    <Compile Include="DataAccess\Adaptors\ArchiveDataService.cs" />
+    <Compile Include="DataAccess\Adaptors\FailoverDataService.cs" />
+    <Compile Include="DataAccess\Adaptors\LiveDataService.cs" />
     <Compile Include="Failover\Repository\FailoverEntry.cs" />
     <Compile Include="DataAccess\Actuals\FailoverLearnerDataAccess.cs" />
     <Compile Include="Failover\Repository\FailoverRepository.cs" />
