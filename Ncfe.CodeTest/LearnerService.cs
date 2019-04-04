@@ -1,7 +1,5 @@
 ﻿using Ncfe.CodeTest.DataAccess.Interfaces;
 using Ncfe.CodeTest.Failover;
-using System;
-using System.Configuration;
 
 namespace Ncfe.CodeTest
 {
@@ -37,7 +35,7 @@ namespace Ncfe.CodeTest
                 LearnerResponse learnerResponse = null;
                 Learner learner = null;
 
-                if (_failoverService.InFailoverMode() && (ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "true" || ConfigurationManager.AppSettings["IsFailoverModeEnabled"] == "True"))
+                if (_failoverService.InFailoverMode())
                 {
                     learnerResponse = _failoverDataService.GetLearner(learnerId);
                 }

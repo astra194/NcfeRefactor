@@ -4,7 +4,6 @@ using Ncfe.CodeTest.DataAccess.Interfaces;
 using Ncfe.CodeTest.Failover;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 
 namespace Ncfe.CodeTest.Tests
 {
@@ -55,18 +54,14 @@ namespace Ncfe.CodeTest.Tests
             {
                 foreach (var inFailoverMode in all)
                 {
-                    foreach (var failoverModeEnabled in all)
+                    foreach (var learnerResponseArchived in all)
                     {
-                        foreach (var learnerResponseArchived in all)
+                        yield return new object[]
                         {
-                            yield return new object[]
-                            {
-                                  isLearnerArchived
-                                , inFailoverMode
-                                , failoverModeEnabled
-                                , learnerResponseArchived
-                            };
-                        }
+                                isLearnerArchived
+                            , inFailoverMode
+                            , learnerResponseArchived
+                        };
                     }
                 }
             }
@@ -76,7 +71,6 @@ namespace Ncfe.CodeTest.Tests
         public void GetLearnerTests(
               bool isLearnerArchived
             , bool inFailoverMode
-            , bool failoverModeEnabled
             , bool learnerResponseArchived
             )
         {
@@ -94,15 +88,13 @@ namespace Ncfe.CodeTest.Tests
 
             A.CallTo(() => _failoverService.InFailoverMode()).Returns(inFailoverMode);
 
-            ConfigurationManager.AppSettings["IsFailoverModeEnabled"] = failoverModeEnabled.ToString();
-
             LearnerSource learnerSource = isLearnerArchived || learnerResponseArchived ? LearnerSource.Archive :
-                                            inFailoverMode && failoverModeEnabled ? LearnerSource.Failover :
+                                            inFailoverMode ? LearnerSource.Failover :
                                             LearnerSource.Live;
 
             bool archiveDataAccessed = isLearnerArchived || learnerResponseArchived;
-            bool failoverDataAccessed = !isLearnerArchived && inFailoverMode && failoverModeEnabled;
-            bool liveDataAccessed = !isLearnerArchived && (!inFailoverMode || !failoverModeEnabled);
+            bool failoverDataAccessed = !isLearnerArchived && inFailoverMode;
+            bool liveDataAccessed = !isLearnerArchived && !inFailoverMode;
 
             bool failoverServiceAccessed = !isLearnerArchived;
 
