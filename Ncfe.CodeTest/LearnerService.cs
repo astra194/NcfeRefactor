@@ -27,21 +27,24 @@ namespace Ncfe.CodeTest
 
         public Learner GetLearner(int learnerId, bool isLearnerArchived)
         {
-            Func<int, Learner> strategy;
+            Func<int, Learner> strategy = GetStrategy(isLearnerArchived, () => _failoverService.InFailoverMode());
+            return strategy(learnerId);
+        }
+
+        // inFailoverMode passed as a Func as we only want to call it (expensive) when required
+        private Func<int, Learner> GetStrategy(bool isLearnerArchived, Func<bool> inFailoverMode)
+        {
             if (isLearnerArchived)
             {
-                strategy = (id) => _archiveService.GetLearner(id);
-            }
-            else if (_failoverService.InFailoverMode())
-            {
-                strategy = (id) => DataOrArchive(_failoverDataService, id);
+                return (id) => _archiveService.GetLearner(id);
             }
             else
             {
-                strategy = (id) => DataOrArchive(_liveDataService, id);
+                ILearnerDataService dataService = inFailoverMode()
+                    ? _failoverDataService
+                    : _liveDataService;
+                return (id) => DataOrArchive(dataService, id);
             }
-
-            return strategy(learnerId);
         }
 
         private Learner DataOrArchive(ILearnerDataService dataService, int learnerId)

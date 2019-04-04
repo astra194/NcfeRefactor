@@ -11,6 +11,7 @@ namespace Ncfe.CodeTest.Configuration
             public const string FailoverRecordsCountThreshold = "FailoverRecordsCountThreshold";
             public const string IsFailoverModeEnabled = "IsFailoverModeEnabled";
         }
+
         public TimeSpan RecentFailoverPeriod => GetConfigValue<TimeSpan>(ConfigNames.RecentFailoverTimeSpan, s => TimeSpan.Parse(s));
 
         public int FailoverRecordsCountThreshold => GetConfigValue<int>(ConfigNames.FailoverRecordsCountThreshold, s => int.Parse(s));
